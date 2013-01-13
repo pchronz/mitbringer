@@ -8,7 +8,8 @@ function OffersCtrl($scope, $rootScope, $location, Login, Offer, Message) {
 
   $scope.offers = Offer.getOffers();
 
-  $scope.dateToString = function(date) {
+  $scope.dateToString = function(d) {
+    var date = new Date(parseInt(d));
     if(date) {
       var d = date.getDate();
       var month = date.getMonth() + 1;
@@ -74,7 +75,8 @@ function MessagesCtrl($scope, $rootScope, Offer, Message) {
     }
     else return null;
   }
-  $scope.dateToString = function(date) {
+  $scope.dateToString = function(d) {
+    var date = new Date(parseInt(d));
     if(date) {
       var d = date.getDate();
       var month = date.getMonth() + 1;
@@ -155,12 +157,24 @@ function RegisterCtrl($scope, $rootScope, $location, Login) {
   $scope.registerEmail;
 
   $scope.register = function(name, password, password2, email) {
-    $location.path('/login');
+    function success() {
+      $location.path('/login');
+    }
+    function failure() {
+    }
+    if(password == password2) Login.register(name, password, email, success, failure);
   }
 }
 RegisterCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login'];
 
-function NavCtrl($scope, $rootScope, Login) {
+function NavCtrl($scope, $rootScope, $location, Login) {
+  // if the user is not logged in, redirect to the login window
+  $rootScope.$on("event:auth-loginRequired", function() {
+    console.log("401 interceptor says hello");
+    Login.logout();
+    $location.path("/login");
+  });
+  
   $scope.views = [
     {
       name: 'listOffers',
@@ -187,5 +201,5 @@ function NavCtrl($scope, $rootScope, Login) {
     return Login.isLoggedIn();
   }
 }
-NavCtrl.$inject = ['$scope','$rootScope', 'Login'];
+NavCtrl.$inject = ['$scope','$rootScope', '$location', 'Login'];
 

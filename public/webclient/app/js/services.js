@@ -9,13 +9,23 @@ function loginFactory($resource) {
 	var loginService = new Object();
 
 	loginService.authToken = {username: "", password: ""};
-	loginService.loginResource = $resource("http://www.die-mitbringer.de:port/logins", {port: ""}, {
-		authenticate: {method: "POST", isArray: false}});
+	loginService.loginResource = $resource("http://localhost:port/logins", {port: ":9000"}, {
+      authenticate: {method: "POST", isArray: false},
+      register: {method: "PUT", isArray: false}
+    });
 	loginService.authenticate = function(username, password, success, failure) {
-		console.log("Trying to log in...");
-		$.jStorage.set("authTokenUsername", username);
-		$.jStorage.set("authTokenPassword", password);
-		//return this.loginResource.authenticate({username: username, password: password}, {}, success, failure);
+		console.log("Trying to authenticate...");
+        function success() {
+          console.log("Login successful");
+          $.jStorage.set("authTokenUsername", username);
+          $.jStorage.set("authTokenPassword", password);
+        }
+        function failure() {
+          console.log("Login failed");
+          $.jStorage.deleteKey("authTokenUsername");
+          $.jStorage.deleteKey("authTokenPassword");
+        }
+		this.loginResource.authenticate({username: username, password: password}, {}, success, failure);
 	};
 	loginService.getAuthToken = function() {
 		console.log("Getting auth token");
@@ -35,80 +45,59 @@ function loginFactory($resource) {
         if(username == null || password == null) return false;
         else return username && password;
 	};
+	loginService.register = function(username, password, email, success, failure) {
+      this.loginResource.register({username: username, password: password, email: email}, {}, success, failure);
+    }
 
 	return loginService;
 };
 loginFactory.$inject = ["$resource"];
 
 serviceModule.factory("Offer", offerFactory);
-function offerFactory($resource) {
+function offerFactory($resource, Login) {
 	var offerService = new Object();
 
-	offerService.getOffers = function(originQuery, destinationQuery, dateQuery) {
+	offerService.offerResource = $resource("http://localhost:9000:port/offers", {port: ":9000"}, {
+      query: {method: "GET", isArray: true},
+      create: {method: "PUT", isArray: false}
+    });
+	offerService.getOffers = function(originQuery, destinationQuery, dateQuery, success, failure) {
 		console.log("Querying offers");
-        var offers = [
-          {
-            id: 1,
-            origin: 'Ikea Kassel',
-            destination: 'Goettingen',
-            date: new Date(),
-            price: '5',
-            user: 'fluppe97'
-          },
-          {
-            id: 2,
-            origin: 'Castrop',
-            destination: 'Goettingen',
-            date: new Date(),
-            price: '5',
-            user: 'mambojambo'
-          }
-        ]
-		return offers;
+		return this.offerResource.query({},{},success, failure);
 	};
-
 	offerService.createOffer = function(origin, destination, date, price) {
       console.log('Creating new offer');
+      var authToken = Login.getAuthToken();
+      return this.offerResource.create({origin: origin, destination: destination, date: new Date(date).getTime(), price: price}, {username: authToken.username, password: authToken.password});
     }
 
 	return offerService;
 };
-offerFactory.$inject = ["$resource"];
+offerFactory.$inject = ["$resource", "Login"];
 
 serviceModule.factory("Message", messageFactory);
-function messageFactory($resource) {
+function messageFactory($resource, Login) {
 	var messageService = new Object();
 
-	messageService.getMessages = function() {
-		console.log("Querying messages");
-        var messages = [
-          {
-            id: 1,
-            originUser: 'bingolero',
-            date: new Date(),
-            offerId: 1,
-            state: 'unread',
-            content: 'Hi,\nKannst Du mir etwas mitbringen?\nBL'
-          },
-          {
-            id: 2,
-            originUser: 'roberta',
-            date: new Date(),
-            offerId: 2,
-            state: 'read',
-            content: 'Bring mir mal was mit'
-          }
-        ]
-		return messages;
+	messageService.messageResource = $resource("http://localhost:9000:port/messages", {port: ":9000"}, {
+      query: {method: "GET", isArray: true},
+      send: {method: "PUT", isArray: false}
+    });
+	messageService.getMessages = function(success, failure) {
+      console.log("Querying messages");
+      var authToken = Login.getAuthToken();
+      return this.messageResource.query({username: authToken.username, password: authToken.password}, success, failure);
 	};
-
-	messageService.sendMessage = function(content, offerId, destinationUser) {
+	messageService.sendMessage = function(content, offerId, destinationUser, success, failure) {
       console.log('Sending message');
+      var originUser = $.jStorage.get("authTokenUsername");
+      var authToken = Login.getAuthToken();
+      this.messageResource.send({content: content, offerId: offerId, destinationUser: destinationUser, originUser: originUser}, {username: authToken.username, password: authToken.password}, success, failure);
     }
 
 	return messageService;
 };
-messageFactory.$inject = ["$resource"];
+messageFactory.$inject = ["$resource", "Login"];
 
 
 

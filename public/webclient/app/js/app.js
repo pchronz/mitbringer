@@ -2,7 +2,7 @@
 
 
 // Declare app level module which depends on filters, and services
-angular.module('breakingBad', ['breakingBad.filters', 'breakingBad.services', 'breakingBad.directives']).
+angular.module('breakingBad', ['breakingBad.filters', 'breakingBad.services', 'breakingBad.directives', 'http-auth-interceptor']).
   config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/', {templateUrl: 'partials/listOffers.html', controller: OffersCtrl});
     $routeProvider.when('/listOffers', {templateUrl: 'partials/listOffers.html', controller: OffersCtrl});
