@@ -1,0 +1,109 @@
+<div class="row">
+  <div class="span12">
+    <form class="navbar-search pull-left">
+      <input type="text" class="search-query" placeholder="Von" />
+      <input type="text" class="search-query" placeholder="Nach" />
+      <input type="date" class="search-query" />
+    </form>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Von</th>
+          <th>Nach</th>
+          <th>Datum</th>
+          <th>Preis</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a ng-click="showNewOfferConfirmationModal()"><i class="icon-plus"></i></a></td>
+          <td><input type="text" placeholder="Von" ng-model="newOfferOrigin" /></td>
+          <td><input type="text" placeholder="Nach" ng-model="newOfferDestination" /></td>
+          <td><input type="date" class="span2" ng-model="newOfferDate" /></td>
+          <td><input type="text" class="span1" placeholder="Preis" ng-model="newOfferPrice" /></td>
+        </tr>
+        <tr ng-repeat="offer in offers" ng-click="contactOffer(offer)">
+          <td><a ng-click="contactOffer(offer)"><i class="icon-envelope"></i></a></td>
+          <td>{{offer.origin}}</td>
+          <td>{{offer.destination}}</td>
+          <td>{{dateToString(offer.date)}}</td>
+          <td>{{offer.price}}&#x20ac;</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Offer Contact -->
+<div class="modal hide fade" id="offerContactModal">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Mitbringer kontaktieren</h3>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Von {{activeOffer.origin}} nach {{activeOffer.destination}} am {{dateToString(activeOffer.date)}} fuer {{activeOffer.price}}&#x20ac;.</strong>
+    </p>
+    <form class="form-horizontal">
+      <div class="control-group">
+        <label class="control-label" for="offerContactUser">Mitbringer</label>
+        <div class="controls">
+          <input type="text" id="offerContactUser" value="{{activeOffer.user}}" readonly></span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="offerContactMessage">Nachricht</label>
+        <div class="controls">
+          <textarea id="offerContactMessage" rows="10" ng-model="offerMessage"></textarea>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn" ng-click="closeModal()">Verwerfen</a>
+    <a href="#" class="btn btn-primary" ng-click="sendMessage(offerMessage, activeOffer)">Senden</a>
+  </div>
+</div>
+
+<!-- New Offer Confirmation -->
+<div class="modal hide fade" id="newOfferConfirmationModal">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Inserat erstellen</h3>
+  </div>
+  <div class="modal-body">
+    <strong>Bist Du sicher, dass Du das Inserat aufgeben moechtest?</strong>
+    <form class="form-horizontal">
+      <div class="control-group">
+        <label class="control-label" for="newOfferOrigin">Von</label>
+        <div class="controls">
+          <input type="text" id="newOfferOrigin" value="{{newOfferOrigin}}"/>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="newOfferDestination">Nach</label>
+        <div class="controls">
+          <input type="text" id="newOfferDestination" value="{{newOfferDestination}}"></input>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="newOfferDate">Datum</label>
+        <div class="controls">
+          <input type="date" id="newOfferDate" value="{{newOfferDate}}"></input>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="newOfferPrice">Preis</label>
+        <div class="controls">
+          <input type="text" id="newOfferPrice" value="{{newOfferPrice}}"></input>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn" ng-click="closeModal()">Verwerfen</a>
+    <a href="#" class="btn btn-primary" ng-click="createOffer(newOfferOrigin, newOfferDestination, newOfferDate, newOfferPrice)">Erstellen</a>
+  </div>
+</div>
+

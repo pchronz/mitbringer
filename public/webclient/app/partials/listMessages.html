@@ -1,0 +1,103 @@
+<div class="row">
+  <div class="span12">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Nutzer</th>
+          <th>Zeitstempel</th>
+          <th>Von</th>
+          <th>Nach</th>
+          <th>Datum</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="message in messages" class="{{getMessageClass(message)}}" ng-click="viewMessage(message)">
+          <td>
+            <strong ng-show="message.state == 'unread'">{{message.originUser}}</strong>
+            <span ng-hide="message.state == 'unread'">{{message.originUser}}</span>
+          </td>
+          <td>
+            <strong ng-show="message.state == 'unread'">{{dateToString(message.date)}}</strong>
+            <span ng-hide="message.state == 'unread'">{{dateToString(message.date)}}</span>
+          </td>
+          <td>
+            <strong ng-show="message.state == 'unread'">{{getOfferForMessage(message, 'origin')}}</strong>
+            <span ng-hide="message.state == 'unread'">{{getOfferForMessage(message, 'origin')}}</span>
+          </td>
+          <td>
+            <strong ng-show="message.state == 'unread'">{{getOfferForMessage(message, 'destination')}}</strong>
+            <span ng-hide="message.state == 'unread'">{{getOfferForMessage(message, 'destination')}}</span>
+          </td>
+          <td>
+            <strong ng-show="message.state == 'unread'">{{dateToString(getOfferForMessage(message, 'date'))}}</strong>
+            <span ng-hide="message.state == 'unread'">{{dateToString(getOfferForMessage(message, 'date'))}}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Message -->
+<div class="modal hide fade" id="viewMessageModal">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Nachricht</h3>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Von {{getOfferForMessage(activeMessage, 'origin')}} nach {{getofferForMessage(activeMessage, 'destination')}} am {{dateToString(getOfferForMessage(activeMessage, 'date'))}} fuer {{getOfferForMessage(activeMessage, 'price')}}&#x20ac;.</strong>
+    </p>
+    <form class="form-horizontal">
+      <div class="control-group">
+        <label class="control-label" for="messageOrigin">Von</label>
+        <div class="controls">
+          <input type="text" id="messageOrigin" value="{{activeMessage.originUser}}" readonly></input>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="messageContent">Nachricht</label>
+        <div class="controls">
+          <textarea id="messageContent" rows="10" readonly style="resize: none;">{{activeMessage.content}}</textarea>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <a class="btn" ng-click="closeModal()">Verwerfen</a>
+    <a class="btn btn-primary" ng-click="showResponseModal(activeMessage)">Antworten</a>
+  </div>
+</div>
+
+<!-- Create a response -->
+<div class="modal hide fade" id="responseModal">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Antwort verfassen</h3>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Von {{getOfferForMessage(activeMessage, 'origin')}} nach {{getofferForMessage(activeMessage, 'destination')}} am {{dateToString(getOfferForMessage(activeMessage, 'date'))}} fuer {{getOfferForMessage(activeMessage, 'price')}}&#x20ac;.</strong>
+    </p>
+    <form class="form-horizontal">
+      <div class="control-group">
+        <label class="control-label" for="messageDestination">An</label>
+        <div class="controls">
+          <input type="text" id="messageDestination" value="{{activeMessage.originUser}}" readonly></input>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="messageContent">Nachricht</label>
+        <div class="controls">
+          <textarea id="messageContent" rows="10" style="resize: none;" ng-model="responseContent"></textarea>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <a class="btn" ng-click="closeModal()">Verwerfen</a>
+    <a class="btn btn-primary" ng-click="sendResponse(activeMessage, responseContent)">Abschicken</a>
+  </div>
+</div>
+
+

@@ -1,0 +1,38 @@
+<div class="row">
+	<div class="span6 offset3">
+		<form class="form-horizontal">
+			<legend>Registrieren</legend>
+			<div class="control-group">
+				<label class="control-label" for="registerName">Name</label>
+				<div class="controls">
+					<input type="text" id="registerName" name="registerName" placeholder="Nutzername" ng-model="registerName">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="registerPassword">Password</label>
+				<div class="controls">
+					<input type="password" id="registerPassword" name="registerPassword" placeholder="Password" ng-model="registerPassword">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="registerPassword">Password (2x)</label>
+				<div class="controls">
+					<input type="password" id="registerPassword2" name="registerPassword2" placeholder="Password" ng-model="registerPassword2">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="registerEmail">E-Mail Addresse</label>
+				<div class="controls">
+					<input type="email" id="registerEmail" name="registerEmail" placeholder="E-Mail" ng-model="registerEmail">
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="controls">
+					<a class="btn btn-primary" ng-click="register(registerName, registerPassword, registerPassword2, registerEmail)">Registrieren</a>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+

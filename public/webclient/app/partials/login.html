@@ -1,0 +1,27 @@
+<div class="row">
+	<div class="span6 offset3">
+		<form class="form-horizontal">
+			<legend>Login</legend>
+			<div class="control-group">
+				<label class="control-label" for="loginName">Name</label>
+				<div class="controls">
+					<input type="text" id="loginName" name="loginName" placeholder="Nutzername" ng-model="loginName">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="loginPassword">Password</label>
+				<div class="controls">
+					<input type="password" id="loginPassword" name="loginPassword" placeholder="Password" ng-model="loginPassword">
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="controls">
+					<a href="#" class="btn btn-primary" ng-click="authenticate(loginName, loginPassword)">Einloggen</a>
+					<a href="#/register" class="btn">Registrieren</a>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+
