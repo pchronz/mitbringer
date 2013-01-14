@@ -15,7 +15,7 @@ import scala.collection.JavaConversions._
 import java.util.Date
 
 
-object Message extends Controller {
+object MessageCtrl extends Controller {
 
   def queryMessages = Authenticated { authRequest =>
     val m1 = Map(

@@ -1,4 +1,5 @@
 <ul class="nav nav-tabs">
+  <li ng-class="getPaneClass('allOffers')"><a ng-click="activatePane('allOffers')">Alle</a></li>
   <li ng-class="getPaneClass('driverOffers')"><a ng-click="activatePane('driverOffers')">Suche Mitbringer</a></li>
   <li ng-class="getPaneClass('driverSearches')"><a ng-click="activatePane('driverSearches')">Suche Mitholer</a></li>
 </ul>
@@ -74,6 +75,43 @@
   </div>
 </div>
 
+<div class="row" id="allOffers" ng-show="activePane=='allOffers'">
+  <div class="span12">
+    <form class="navbar-search pull-left">
+      <input type="text" class="search-query" placeholder="Von" />
+      <input type="text" class="search-query" placeholder="Nach" />
+      <input type="date" class="search-query" />
+    </form>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Von</th>
+          <th>Nach</th>
+          <th>Datum</th>
+          <th>Preis</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a ng-click="showNewOfferConfirmationModal(true)"><i class="icon-plus"></i></a></td>
+          <td><input type="text" placeholder="Von" ng-model="newOfferOrigin" /></td>
+          <td><input type="text" placeholder="Nach" ng-model="newOfferDestination" /></td>
+          <td><input type="date" class="span2" ng-model="newOfferDate" /></td>
+          <td><input type="text" class="span1" placeholder="Preis" ng-model="newOfferPrice" /></td>
+        </tr>
+        <tr ng-repeat="offer in allOffers" ng-click="contactOffer(offer)">
+          <td><a ng-click="contactOffer(offer)"><i class="icon-envelope"></i></a></td>
+          <td>{{offer.origin}}</td>
+          <td>{{offer.destination}}</td>
+          <td>{{dateToString(offer.date)}}</td>
+          <td ng-show="offer.isDriver">{{offer.price}}&#37;</td>
+          <td ng-hide="offer.isDriver">-</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
 <!-- Offer Contact -->
 <div class="modal hide fade" id="offerContactModal">

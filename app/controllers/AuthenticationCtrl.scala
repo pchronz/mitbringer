@@ -18,7 +18,7 @@ import java.util.Date
 import models.User
 
 
-object Authentication extends Controller {
+object AuthenticationCtrl extends Controller {
   def authenticate(username: String, password: String) = Action {
     Logger.info("Authenticatation for " + username + " " + password)
     if(User.authenticate(username, password)) {
@@ -49,7 +49,7 @@ object Authenticated {
     )
     def authenticate[T](implicit request: Request[T]): Option[String] = {
         def auth(username: String, password: String) = {
-          if(username == password) Some(username)
+          if(User.authenticate(username, password)) Some(username)
           else None
         }
         try {

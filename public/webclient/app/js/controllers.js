@@ -6,7 +6,7 @@
 function OffersCtrl($scope, $rootScope, $location, Login, Offer, Message) {
   $rootScope.activeView = 'listOffers';
 
-  $scope.activePane = 'driverOffers';
+  $scope.activePane = 'allOffers';
   $scope.activatePane = function(paneName) {
     $scope.activePane = paneName;
   }
@@ -14,6 +14,7 @@ function OffersCtrl($scope, $rootScope, $location, Login, Offer, Message) {
     return $scope.activePane == paneName ? 'active' : '';
   }
 
+  $scope.allOffers = Offer.getOffers();
   $scope.driverOffers = Offer.getOffers();
   $scope.driverSearches = Offer.getOffers();
 
@@ -166,13 +167,27 @@ function RegisterCtrl($scope, $rootScope, $location, Login) {
   $scope.registerPassword2;
   $scope.registerEmail;
 
-  $scope.register = function(name, password, password2, email) {
+  $scope.register = function(username, password, password2, email) {
     function success() {
       $location.path('/login');
     }
     function failure() {
     }
-    if(password == password2) Login.register(name, password, email, success, failure);
+    // validate the email address
+    var emailValid = /[A-z|0-9]+@[A-z|0-9]+\.[A-z]+/.test(email);
+    console.log("Email valid: " + emailValid);
+
+    // validate the password
+    var passwordSame = password == password2;
+    console.log("Password same: " + passwordSame);
+    var passwordValid = password.length >= 4;
+    console.log("Password valid: " + passwordValid);
+
+    // validate the username
+    var usernameValid = username.length >= 4;
+    console.log("Username valid: " + usernameValid);
+
+    if(emailValid && passwordSame && passwordValid && usernameValid) Login.register(username, password, email, success, failure);
   }
 }
 RegisterCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login'];
