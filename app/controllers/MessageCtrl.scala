@@ -14,33 +14,38 @@ import play.api.Play.current
 import scala.collection.JavaConversions._
 import java.util.Date
 
+import models.Message
+
 
 object MessageCtrl extends Controller {
 
+  implicit def messagesToJson(messages: List[Message]): JsValue = {
+    toJson(messages.map(messageToJson(_)))
+  }
+
+  implicit def messageToJson(message: Message): JsValue = {
+    val messageMap = Map(
+      "id"->toJson(message.id),
+      "originUser"->toJson(message.originUser),
+      "destinationUser"->toJson(message.destinationUser),
+      "date"->toJson(message.date.getTime),
+      "offerId"->toJson(message.offer),
+      "state"->toJson(message.state),
+      "content"->toJson(message.content)
+    )
+    toJson(messageMap)
+  }
   def queryMessages = Authenticated { authRequest =>
-    val m1 = Map(
-      "id"->"1",
-      "originUser"->"bingolero",
-      "date"-> new Date().getTime.toString,
-      "offerId"->"1",
-      "state"->"unread",
-      "content"->"Hi,\nKannst Du mir etwas mitbringen?\nBL"
-    )
-    val m2 = Map(
-      "id"->"2",
-      "originUser"->"roberta",
-      "date"-> new Date().getTime.toString,
-      "offerId"->"1",
-      "state"->"read",
-      "content"->"Bring mir mal was mit"
-    )
-    val messages = List(m1, m2)
-    Logger.info(stringify(toJson(messages)))
-    Ok(stringify(toJson(messages)))
+    Logger.info("Querying messages")
+    val messages = Message.getAll
+    Logger.debug(messages.mkString)
+    Logger.debug(stringify(toJson(messagesToJson(messages))))
+    Ok(stringify(toJson(messagesToJson(messages))))
   }
   
-  def sendMessage(content: String, offerId: String, destinationUser: String, originUser: String) = Authenticated { authRequest =>
-    Logger.info("Sending message with " + content + " " + offerId + " " + destinationUser + " " + originUser)
+  def sendMessage(content: String, offerId: String, destinationUser: String) = Authenticated { authRequest =>
+    Logger.info("Sending message with " + content + " " + offerId + " " + destinationUser + " " + authRequest.username)
+    Message.create(authRequest.username, destinationUser, new Date(), offerId.toLong, "unread", content)
     Ok
   }
   

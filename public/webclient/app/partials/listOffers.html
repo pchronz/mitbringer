@@ -93,13 +93,6 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td><a ng-click="showNewOfferConfirmationModal(true)"><i class="icon-plus"></i></a></td>
-          <td><input type="text" placeholder="Von" ng-model="newOfferOrigin" /></td>
-          <td><input type="text" placeholder="Nach" ng-model="newOfferDestination" /></td>
-          <td><input type="date" class="span2" ng-model="newOfferDate" /></td>
-          <td><input type="text" class="span1" placeholder="Preis" ng-model="newOfferPrice" /></td>
-        </tr>
         <tr ng-repeat="offer in allOffers" ng-click="contactOffer(offer)">
           <td><a ng-click="contactOffer(offer)"><i class="icon-envelope"></i></a></td>
           <td>{{offer.origin}}</td>

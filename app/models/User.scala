@@ -47,4 +47,8 @@ object User {
         true
     }
   }
+
+  def getAll() = DB.withConnection { implicit c =>
+    SQL("SELECT * FROM usar").as(user *)
+  }
 }

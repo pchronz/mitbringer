@@ -7,7 +7,7 @@ GET     /                           controllers.Application.index
 
 # Messages
 GET     /messages                   controllers.MessageCtrl.queryMessages
-PUT     /messages                   controllers.MessageCtrl.sendMessage(content: String, offerId: String, destinationUser: String, originUser: String)
+PUT     /messages                   controllers.MessageCtrl.sendMessage(content: String, offerId: String, destinationUser: String)
 
 # Offers
 GET     /offers                     controllers.OfferCtrl.queryOffers

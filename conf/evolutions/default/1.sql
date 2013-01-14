@@ -19,11 +19,12 @@ CREATE TABLE offer (
 CREATE SEQUENCE message_id_seq;
 CREATE TABLE message (
   id INTEGER NOT NULL DEFAULT nextval('message_id_seq') PRIMARY KEY,
-  originUser VARCHAR(32) NOT NULL,
+  originUser VARCHAR(32) NOT NULL REFERENCES usar(username),
+  destinationUser VARCHAR(32) NOT NULL REFERENCES usar(username),
   date LONG NOT NULL,
-  offerId INTEGER NOT NULL REFERENCES offer(id),
+  offer INTEGER NOT NULL REFERENCES offer(id),
   state VARCHAR(16) NOT NULL,
-  content TEXT
+  content TEXT NOT NULL
 );
 
 

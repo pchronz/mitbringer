@@ -61,7 +61,7 @@ function offerFactory($resource, Login) {
       query: {method: "GET", isArray: true},
       create: {method: "PUT", isArray: false}
     });
-	offerService.getOffers = function(originQuery, destinationQuery, dateQuery, isDriver, success, failure) {
+	offerService.getOffers = function(success, failure) {
 		console.log("Querying offers");
 		return this.offerResource.query({},{},success, failure);
 	};

@@ -68,8 +68,10 @@ OffersCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login', 'Offer', 'Me
 function MessagesCtrl($scope, $rootScope, Offer, Message) {
   $rootScope.activeView = 'listMessages';
 
-  $scope.offers = Offer.getOffers();
-  $scope.messages = Message.getMessages();
+  function getOffersSuccess() {
+    $scope.messages = Message.getMessages();
+  }
+  $scope.offers = Offer.getOffers(getOffersSuccess);
 
   // helper function for displaying messages
   $scope.getOfferForMessage = function(message, field) {
