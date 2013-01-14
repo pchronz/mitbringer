@@ -11,7 +11,7 @@ PUT     /messages                   controllers.Message.sendMessage(content: Str
 
 # Offers
 GET     /offers                     controllers.Offer.queryOffers
-PUT     /offers                     controllers.Offer.createOffer(origin: String, destination: String, date: String, price: String)
+PUT     /offers                     controllers.Offer.createOffer(origin: String, destination: String, date: String, price: String, isDriver: Boolean)
 
 # Authentication
 POST    /logins                     controllers.Authentication.authenticate(username: String, password: String)

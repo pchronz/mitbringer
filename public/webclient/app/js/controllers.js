@@ -6,7 +6,16 @@
 function OffersCtrl($scope, $rootScope, $location, Login, Offer, Message) {
   $rootScope.activeView = 'listOffers';
 
-  $scope.offers = Offer.getOffers();
+  $scope.activePane = 'driverOffers';
+  $scope.activatePane = function(paneName) {
+    $scope.activePane = paneName;
+  }
+  $scope.getPaneClass = function(paneName) {
+    return $scope.activePane == paneName ? 'active' : '';
+  }
+
+  $scope.driverOffers = Offer.getOffers();
+  $scope.driverSearches = Offer.getOffers();
 
   $scope.dateToString = function(d) {
     var date = new Date(parseInt(d));
@@ -35,16 +44,17 @@ function OffersCtrl($scope, $rootScope, $location, Login, Offer, Message) {
   }
 
   // confirm offer creation
-  $scope.showNewOfferConfirmationModal = function() {
+  $scope.showNewOfferConfirmationModal = function(isDriver) {
     console.log('Displaying modal for new offer confirmation');
+    $scope.isDriver = isDriver;
     if(Login.isLoggedIn()) $("#newOfferConfirmationModal").modal('show');
     else $location.path('/login');
   }
 
-  $scope.createOffer = function(origin, destination, date, price) {
+  $scope.createOffer = function(origin, destination, date, price, isDriver) {
     console.log("Creating a new offer: " + origin + " " + destination + " " + date + " " + price);
     $(".modal").modal("hide");
-    Offer.createOffer(origin, destination, date, price);
+    Offer.createOffer(origin, destination, date, price, isDriver, isDriver);
   }
 
   $scope.closeModal = function() {

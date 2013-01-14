@@ -18,13 +18,15 @@ import java.util.Date
 object Offer extends Controller {
 
   def queryOffers = Action {
+    Logger.info("Querying offers")
     val o1 = Map(
       "id"->"1",
       "origin"->"Ikea Kassel",
       "destination"->"Goettingen",
       "date"-> new Date().getTime.toString,
       "price"->"5",
-      "user"->"fluppe67"
+      "user"->"fluppe67",
+      "isDriver"->"1"
     )
     val o2 = Map(
       "id"->"2",
@@ -32,14 +34,15 @@ object Offer extends Controller {
       "destination"->"Kassel",
       "date"-> new Date().getTime.toString,
       "price"->"5",
-      "user"->"roberta13"
+      "user"->"roberta13",
+      "isDriver"->"0"
     )
     val offers = List(o1, o2)
     Ok(stringify(toJson(offers)))
   }
 
-  def createOffer(origin: String, destination: String, date: String, price: String) = Authenticated { authRequest =>
-    Logger.info("Create offer with " + origin + " " + destination + " " + date + " " + price)
+  def createOffer(origin: String, destination: String, date: String, price: String, isDriver: Boolean) = Authenticated { authRequest =>
+    Logger.info("Create offer with " + origin + " " + destination + " " + date + " " + price + " isDriver==" + isDriver)
     Ok
   }
   

@@ -61,14 +61,15 @@ function offerFactory($resource, Login) {
       query: {method: "GET", isArray: true},
       create: {method: "PUT", isArray: false}
     });
-	offerService.getOffers = function(originQuery, destinationQuery, dateQuery, success, failure) {
+	offerService.getOffers = function(originQuery, destinationQuery, dateQuery, isDriver, success, failure) {
 		console.log("Querying offers");
 		return this.offerResource.query({},{},success, failure);
 	};
-	offerService.createOffer = function(origin, destination, date, price) {
+	offerService.createOffer = function(origin, destination, date, price, isDriver) {
       console.log('Creating new offer');
+      var isDriverNum = isDriver ? 1 : 0;
       var authToken = Login.getAuthToken();
-      return this.offerResource.create({origin: origin, destination: destination, date: new Date(date).getTime(), price: price}, {username: authToken.username, password: authToken.password});
+      return this.offerResource.create({origin: origin, destination: destination, date: new Date(date).getTime(), price: price, isDriver: isDriverNum}, {username: authToken.username, password: authToken.password});
     }
 
 	return offerService;

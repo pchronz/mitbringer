@@ -15,11 +15,13 @@ import play.api.Play.current
 import scala.collection.JavaConversions._
 import java.util.Date
 
+import models.User
+
 
 object Authentication extends Controller {
   def authenticate(username: String, password: String) = Action {
     Logger.info("Authenticatation for " + username + " " + password)
-    if(username == password) {
+    if(User.authenticate(username, password)) {
       Logger.info("Authentication successful")
       Ok
     }
@@ -31,7 +33,10 @@ object Authentication extends Controller {
 
   def register(username: String, password: String, email: String) = Action {
     Logger.info("New user registering: " + username + "/" + password + "/" + email)
-    Ok
+    User.create(username, password, email) match {
+      case Some(user) => Ok
+      case None => BadRequest
+    }
   }
 }
 
