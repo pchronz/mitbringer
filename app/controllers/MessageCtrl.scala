@@ -35,9 +35,13 @@ object MessageCtrl extends Controller {
     )
     toJson(messageMap)
   }
-  def queryMessages = Authenticated { authRequest =>
-    Logger.info("Querying messages")
-    val messages = Message.getAll
+  def queryMessages(box: String) = Authenticated { authRequest =>
+    Logger.info("Querying messages for user: " + authRequest.username)
+    val messages = box match {
+      case "received" => Message.getAllToUser(authRequest.username)
+      case "sent" => Message.getAllByUser(authRequest.username)
+      case _ => throw new Exception(authRequest.username + "is trying to query non-existent mailbox: " + box)
+    }
     Logger.debug(messages.mkString)
     Logger.debug(stringify(toJson(messagesToJson(messages))))
     Ok(stringify(toJson(messagesToJson(messages))))

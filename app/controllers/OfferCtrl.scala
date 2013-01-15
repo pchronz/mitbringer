@@ -36,9 +36,13 @@ object OfferCtrl extends Controller {
     toJson(offerMap)
   }
 
-  def queryOffers = Action {
-    Logger.info("Querying offers")
-    val offers = Offer.getAll
+  def queryOffers(isDriver: Option[Boolean], origin: Option[String], destination: Option[String]) = Action {
+    Logger.info("Querying all offers: isDriver=" + isDriver + " origin=" + origin + " destination=" + destination)
+    val offers = isDriver match {
+      case None => Offer.queryAll(origin, destination)
+      case Some(isDrivr) => Offer.queryDriverOffers(isDrivr, origin, destination)
+    }
+    
     Ok(stringify(offers))
   }
 

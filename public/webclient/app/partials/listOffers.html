@@ -1,15 +1,15 @@
 <ul class="nav nav-tabs">
   <li ng-class="getPaneClass('allOffers')"><a ng-click="activatePane('allOffers')">Alle</a></li>
-  <li ng-class="getPaneClass('driverOffers')"><a ng-click="activatePane('driverOffers')">Suche Mitbringer</a></li>
-  <li ng-class="getPaneClass('driverSearches')"><a ng-click="activatePane('driverSearches')">Suche Mitholer</a></li>
+  <li ng-class="getPaneClass('driverOffers')"><a ng-click="activatePane('driverOffers')">Mitbringer</a></li>
+  <li ng-class="getPaneClass('driverSearches')"><a ng-click="activatePane('driverSearches')">Mitholer</a></li>
 </ul>
 
 <div class="row" id="driverOffers" ng-show="activePane=='driverOffers'">
   <div class="span12">
     <form class="navbar-search pull-left">
-      <input type="text" class="search-query" placeholder="Von" />
-      <input type="text" class="search-query" placeholder="Nach" />
-      <input type="date" class="search-query" />
+      <input type="text" class="search-query" placeholder="Von" ng-model="originQuery" ng-change="queryDriverOffers(originQuery, destinationQuery)" />
+      <input type="text" class="search-query" placeholder="Nach" ng-model="destinationQuery" ng-change="queryDriverOffers(originQuery, destinationQuery)" />
+      <input type="submit" value="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
     </form>
     <table class="table table-hover">
       <thead>
@@ -29,7 +29,7 @@
           <td><input type="date" class="span2" ng-model="newOfferDate" /></td>
           <td><input type="text" class="span1" placeholder="Preis" ng-model="newOfferPrice" /></td>
         </tr>
-        <tr ng-repeat="offer in driverOffers" ng-click="contactOffer(offer)">
+        <tr ng-repeat="offer in driverOffers" ng-click="contactOffer(offer)" ng-class="getOfferClass(offer)">
           <td><a ng-click="contactOffer(offer)"><i class="icon-envelope"></i></a></td>
           <td>{{offer.origin}}</td>
           <td>{{offer.destination}}</td>
@@ -44,9 +44,9 @@
 <div class="row" id="driverSearches" ng-show="activePane=='driverSearches'" ng-click="activatePane('driverSearches')">
   <div class="span12">
     <form class="navbar-search pull-left">
-      <input type="text" class="search-query" placeholder="Von" />
-      <input type="text" class="search-query" placeholder="Nach" />
-      <input type="date" class="search-query" />
+      <input type="text" class="search-query" placeholder="Von" ng-model="originQuery" ng-change="queryDriverSearches(originQuery, destinationQuery)" />
+      <input type="text" class="search-query" placeholder="Nach" ng-model="destinationQuery" ng-change="queryDriverSearches(originQuery, destinationQuery)" />
+      <input type="submit" value="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
     </form>
     <table class="table table-hover">
       <thead>
@@ -64,7 +64,7 @@
           <td><input type="text" placeholder="Nach" ng-model="newOfferDestination" /></td>
           <td><input type="date" class="span2" ng-model="newOfferDate" /></td>
         </tr>
-        <tr ng-repeat="offer in driverSearches" ng-click="contactOffer(offer)">
+        <tr ng-repeat="offer in driverSearches" ng-click="contactOffer(offer)" ng-class="getOfferClass(offer)">
           <td><a ng-click="contactOffer(offer)"><i class="icon-envelope"></i></a></td>
           <td>{{offer.origin}}</td>
           <td>{{offer.destination}}</td>
@@ -78,9 +78,9 @@
 <div class="row" id="allOffers" ng-show="activePane=='allOffers'">
   <div class="span12">
     <form class="navbar-search pull-left">
-      <input type="text" class="search-query" placeholder="Von" />
-      <input type="text" class="search-query" placeholder="Nach" />
-      <input type="date" class="search-query" />
+      <input type="text" class="search-query" placeholder="Von" ng-model="originQuery" ng-change="queryAllOffers(originQuery, destinationQuery)" />
+      <input type="text" class="search-query" placeholder="Nach" ng-model="destinationQuery" ng-change="queryAllOffers(originQuery, destinationQuery)" />
+      <input type="submit" value="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
     </form>
     <table class="table table-hover">
       <thead>
@@ -93,7 +93,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="offer in allOffers" ng-click="contactOffer(offer)">
+        <tr ng-repeat="offer in allOffers" ng-click="contactOffer(offer)" ng-class="getOfferClass(offer)">
           <td><a ng-click="contactOffer(offer)"><i class="icon-envelope"></i></a></td>
           <td>{{offer.origin}}</td>
           <td>{{offer.destination}}</td>

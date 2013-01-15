@@ -48,7 +48,47 @@ object Offer {
     }
   }
 
-  def getAll() = DB.withConnection { implicit c =>
-    SQL("SELECT * FROM offer").as(offer *)
+  private def preprocessQueryString(query: Option[String]):Option[String] = {
+    query match {
+      case Some(q) => if(q == "") None else Some(q.toUpperCase)
+      case None => None
+    }
+  }
+
+  def queryAll(origin: Option[String], destination: Option[String]) = DB.withConnection { implicit c =>
+    val orig = preprocessQueryString(origin)
+    val dest = preprocessQueryString(destination)
+    (orig, dest) match {
+      case (None, None) => SQL("SELECT * FROM offer").as(offer *)
+      case (None, Some(d)) => 
+        val likeD = "%" + d + "%"
+        SQL("SELECT * FROM offer WHERE UCASE(destination) LIKE {likeD}").on("likeD"->likeD).as(offer *)
+      case (Some(o), None) => 
+        val likeO = "%" + o + "%"
+        SQL("SELECT * FROM offer WHERE UCASE(origin) LIKE {likeO}").on("likeO"->likeO).as(offer *)
+      case (Some(o), Some(d)) => 
+        val likeO = "%" + o + "%"
+        val likeD = "%" + d + "%"
+        SQL("SELECT * FROM offer WHERE UCASE(destination) LIKE {likeD} AND UCASE(origin) LIKE {likeO}").on("likeO"->likeO, "likeD"->likeD).as(offer *)
+    }
+  }
+
+  def queryDriverOffers(isDriver: Boolean, origin: Option[String], destination: Option[String]) = DB.withConnection { implicit c =>
+    val orig = preprocessQueryString(origin)
+    val dest = preprocessQueryString(destination)
+    val driver = if(isDriver) "t" else "f"
+    (orig, dest) match {
+      case (None, None) => SQL("SELECT * FROM offer WHERE isDriver={driver}").on("driver"->driver).as(offer *)
+      case (None, Some(d)) => 
+        val likeD = "%" + d + "%"
+        SQL("SELECT * FROM offer WHERE isDriver={driver} AND UCASE(destination) LIKE {likeD}").on("driver"->driver, "likeD"->likeD).as(offer *)
+      case (Some(o), None) => 
+        val likeO = "%" + o + "%"
+        SQL("SELECT * FROM offer WHERE isDriver={driver} AND UCASE(origin) LIKE {likeO}").on("driver"->driver, "likeO"->likeO).as(offer *)
+      case (Some(o), Some(d)) => 
+        val likeO = "%" + o + "%"
+        val likeD = "%" + d + "%"
+        SQL("SELECT * FROM offer WHERE isDriver={driver} AND UCASE(destination) LIKE {likeD} AND UCASE(origin) LIKE {likeO}").on("driver"->driver, "likeO"->likeO, "likeD"->likeD).as(offer *)
+    }
   }
 }

@@ -9,14 +9,18 @@ function OffersCtrl($scope, $rootScope, $location, Login, Offer, Message) {
   $scope.activePane = 'allOffers';
   $scope.activatePane = function(paneName) {
     $scope.activePane = paneName;
+
+    // clear the queries
+    $scope.originQuery = "";
+    $scope.destinationQuery = "";
   }
   $scope.getPaneClass = function(paneName) {
     return $scope.activePane == paneName ? 'active' : '';
   }
 
-  $scope.allOffers = Offer.getOffers();
-  $scope.driverOffers = Offer.getOffers();
-  $scope.driverSearches = Offer.getOffers();
+  $scope.allOffers = Offer.getAllOffers();
+  $scope.driverOffers = Offer.getDriverOffers();
+  $scope.driverSearches = Offer.getDriverSearches();
 
   $scope.dateToString = function(d) {
     var date = new Date(parseInt(d));
@@ -27,6 +31,10 @@ function OffersCtrl($scope, $rootScope, $location, Login, Offer, Message) {
       return d.toString() + "." + month + "." + year;
     }
     else return "";
+  }
+
+  $scope.getOfferClass = function(offer) {
+    return offer.isDriver ? 'success' : 'info';
   }
 
   $scope.activeOffer;
@@ -62,6 +70,19 @@ function OffersCtrl($scope, $rootScope, $location, Login, Offer, Message) {
     console.log('Closing all modals');
     $(".modal").modal("hide");
   }
+
+  $scope.queryAllOffers = function(originQuery, destinationQuery) {
+    console.log("Querying all offers");
+    $scope.allOffers = Offer.queryAllOffers(originQuery, destinationQuery);
+  }
+  $scope.queryDriverOffers = function(originQuery, destinationQuery) {
+    console.log("Querying driver offers");
+    $scope.driverOffers = Offer.querySpecialOffers(true, originQuery, destinationQuery);
+  }
+  $scope.queryDriverSearches = function(originQuery, destinationQuery) {
+    console.log("Querying driver searches");
+    $scope.driverSearches = Offer.querySpecialOffers(false, originQuery, destinationQuery);
+  }
 }
 OffersCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login', 'Offer', 'Message'];
 
@@ -69,9 +90,18 @@ function MessagesCtrl($scope, $rootScope, Offer, Message) {
   $rootScope.activeView = 'listMessages';
 
   function getOffersSuccess() {
-    $scope.messages = Message.getMessages();
+    $scope.receivedMessages = Message.getReceivedMessages();
+    $scope.sentMessages = Message.getSentMessages();
   }
-  $scope.offers = Offer.getOffers(getOffersSuccess);
+  $scope.offers = Offer.getAllOffers(getOffersSuccess);
+
+  $scope.activePane = 'inbox';
+  $scope.activatePane = function(pane) {
+    $scope.activePane = pane;
+  }
+  $scope.getPaneClass = function(pane) {
+    return $scope.activePane == pane ? 'active' : '';
+  }
 
   // helper function for displaying messages
   $scope.getOfferForMessage = function(message, field) {
@@ -101,7 +131,6 @@ function MessagesCtrl($scope, $rootScope, Offer, Message) {
   $scope.getMessageClass = function(message) {
     return message.state == 'unread' ? 'info' : '';
   }
-
   $scope.viewMessage = function(message) {
     $scope.activeMessage = message;
     message.state = 'read';
@@ -194,13 +223,30 @@ function RegisterCtrl($scope, $rootScope, $location, Login) {
 }
 RegisterCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login'];
 
-function NavCtrl($scope, $rootScope, $location, Login) {
+function NavCtrl($scope, $rootScope, $location, Login, Message) {
   // if the user is not logged in, redirect to the login window
   $rootScope.$on("event:auth-loginRequired", function() {
     console.log("401 interceptor says hello");
     Login.logout();
     $location.path("/login");
   });
+
+  $scope.getUsername = function() {
+    return Login.getAuthToken().username;
+  }
+
+  $scope.numNewMessages = 0;
+  function updateNumNewMessages() {
+    function success(messages) {
+      var m;
+      for(m in messages) {
+        var message = messages[m];
+        if(message.state == 'unread') $scope.numNewMessages += 1;
+      }
+    }
+    Message.getReceivedMessages(success);
+  }
+  updateNumNewMessages();
   
   $scope.views = [
     {
@@ -228,5 +274,5 @@ function NavCtrl($scope, $rootScope, $location, Login) {
     return Login.isLoggedIn();
   }
 }
-NavCtrl.$inject = ['$scope','$rootScope', '$location', 'Login'];
+NavCtrl.$inject = ['$scope','$rootScope', '$location', 'Login', 'Message'];
 

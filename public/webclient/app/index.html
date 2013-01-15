@@ -13,11 +13,11 @@
 				<div class="container">
                   <a class="brand" href="#"><img ng-src="img/breakingbad5.jpg"></img></a>
 					<ul class="nav">
-                      <li ng-repeat="view in views" ng-class="getViewClass(view.name)" ng-show="getShow(view)"><a href="#/{{view.name}}">{{view.label}}</a></li>
+                      <li ng-repeat="view in views" ng-class="getViewClass(view.name)" ng-show="getShow(view)"><a href="#/{{view.name}}">{{view.label}} <strong ng-show="view.name == 'listMessages'" class="strong">({{numNewMessages}})</strong></a></li>
 					</ul>
                     <ul class="nav pull-right">
                       <li ng-class="getViewClass('login')" ng-hide="isLoggedIn()"><a href="#/login">Einloggen</a></li>
-                      <li ng-show="isLoggedIn()"><a href="#/logout" ng-click="logout()">Ausloggen</a></li>
+                      <li ng-show="isLoggedIn()"><a href="#/logout" ng-click="logout()">Ausloggen ({{getUsername()}}) </a></li>
                     </ul>
 				</div>
 			</div>

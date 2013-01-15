@@ -61,9 +61,34 @@ function offerFactory($resource, Login) {
       query: {method: "GET", isArray: true},
       create: {method: "PUT", isArray: false}
     });
-	offerService.getOffers = function(success, failure) {
+	offerService.getAllOffers = function(success, failure) {
 		console.log("Querying offers");
 		return this.offerResource.query({},{},success, failure);
+	};
+	offerService.queryAllOffers = function(origin, destination, success, failure) {
+		console.log("Querying all offers for " + origin + "/" + destination);
+        if(typeof origin == 'undefined')
+          return this.offerResource.query({destination: destination},{},success, failure);
+        if(typeof destination == 'undefined')
+          return this.offerResource.query({origin: origin},{},success, failure);
+        return this.offerResource.query({origin: origin, destination: destination},{},success, failure);
+	};
+	offerService.getDriverOffers = function(success, failure) {
+		console.log("Querying driver offers");
+		return this.offerResource.query({isDriver: 1}, {}, success, failure);
+	};
+	offerService.getDriverSearches = function(success, failure) {
+		console.log("Querying driver searches");
+		return this.offerResource.query({isDriver: 0}, {}, success, failure);
+	};
+	offerService.querySpecialOffers = function(isDriver, origin, destination, success, failure) {
+		console.log("Querying special offers for " + origin + "/" + destination);
+        var isDrivr = isDriver ? 1 : 0;
+        if(typeof origin == 'undefined')
+          return this.offerResource.query({isDriver: isDrivr, destination: destination},{},success, failure);
+        if(typeof destination == 'undefined')
+          return this.offerResource.query({isDriver: isDrivr, origin: origin},{},success, failure);
+        return this.offerResource.query({isDriver: isDrivr, origin: origin, destination: destination},{},success, failure);
 	};
 	offerService.createOffer = function(origin, destination, date, price, isDriver) {
       console.log('Creating new offer');
@@ -80,14 +105,19 @@ serviceModule.factory("Message", messageFactory);
 function messageFactory($resource, Login) {
 	var messageService = new Object();
 
-	messageService.messageResource = $resource("http://localhost:9000:port/messages", {port: ":9000"}, {
+	messageService.messageResource = $resource("http://localhost:port/messages/:box", {port: ":9000"}, {
       query: {method: "GET", isArray: true},
       send: {method: "PUT", isArray: false}
     });
-	messageService.getMessages = function(success, failure) {
-      console.log("Querying messages");
+	messageService.getReceivedMessages = function(success, failure) {
+      console.log("Querying received messages");
       var authToken = Login.getAuthToken();
-      return this.messageResource.query({username: authToken.username, password: authToken.password}, success, failure);
+      return this.messageResource.query({box: 'received', username: authToken.username, password: authToken.password}, {}, success, failure);
+	};
+	messageService.getSentMessages = function(success, failure) {
+      console.log("Querying sent messages");
+      var authToken = Login.getAuthToken();
+      return this.messageResource.query({box: 'sent', username: authToken.username, password: authToken.password}, success, failure);
 	};
 	messageService.sendMessage = function(content, offerId, destinationUser, success, failure) {
       console.log('Sending message');

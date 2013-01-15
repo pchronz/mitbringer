@@ -1,9 +1,19 @@
 <div class="row">
   <div class="span12">
+    <ul class="nav nav-tabs">
+      <li ng-class="getPaneClass('inbox')"><a ng-click="activatePane('inbox')">Eingang</a></li>
+      <li ng-class="getPaneClass('sent')"><a ng-click="activatePane('sent')">Gesendet</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- inbox pane -->
+<div class="row" id="inboxPane" ng-show="activePane == 'inbox'">
+  <div class="span12">
     <table class="table table-hover">
       <thead>
         <tr>
-          <th>Nutzer</th>
+          <th>Von</th>
           <th>Zeitstempel</th>
           <th>Von</th>
           <th>Nach</th>
@@ -11,7 +21,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="message in messages" class="{{getMessageClass(message)}}" ng-click="viewMessage(message)">
+        <tr ng-repeat="message in receivedMessages" class="{{getMessageClass(message)}}" ng-click="viewMessage(message)">
           <td>
             <strong ng-show="message.state == 'unread'">{{message.originUser}}</strong>
             <span ng-hide="message.state == 'unread'">{{message.originUser}}</span>
@@ -31,6 +41,42 @@
           <td>
             <strong ng-show="message.state == 'unread'">{{dateToString(getOfferForMessage(message, 'date'))}}</strong>
             <span ng-hide="message.state == 'unread'">{{dateToString(getOfferForMessage(message, 'date'))}}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- sent pane -->
+<div class="row" id="sentPane" ng-show="activePane == 'sent'">
+  <div class="span12">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>An</th>
+          <th>Zeitstempel</th>
+          <th>Von</th>
+          <th>Nach</th>
+          <th>Datum</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="message in sentMessages" ng-click="viewMessage(message)">
+          <td>
+            <span>{{message.originUser}}</span>
+          </td>
+          <td>
+            <span>{{dateToString(message.date)}}</span>
+          </td>
+          <td>
+            <span>{{getOfferForMessage(message, 'origin')}}</span>
+          </td>
+          <td>
+            <span>{{getOfferForMessage(message, 'destination')}}</span>
+          </td>
+          <td>
+            <span>{{dateToString(getOfferForMessage(message, 'date'))}}</span>
           </td>
         </tr>
       </tbody>

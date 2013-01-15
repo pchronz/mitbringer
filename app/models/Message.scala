@@ -44,5 +44,12 @@ object Message {
   def getAll = DB.withConnection { implicit c =>
     SQL("SELECT * FROM message").as(message *)
   }
+  def getAllToUser(username: String) = DB.withConnection { implicit c =>
+    SQL("SELECT * FROM message WHERE destinationUser={username}").on("username"->username).as(message *)
+  }
+  def getAllByUser(username: String) = DB.withConnection { implicit c =>
+    // TODO filter out 'state' so the sender does not know whether the receiver has already read this email
+    SQL("SELECT * FROM message WHERE originUser={username}").on("username"->username).as(message *)
+  }
 }
 

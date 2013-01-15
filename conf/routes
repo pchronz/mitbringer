@@ -6,11 +6,11 @@
 GET     /                           controllers.Application.index
 
 # Messages
-GET     /messages                   controllers.MessageCtrl.queryMessages
+GET     /messages/:box              controllers.MessageCtrl.queryMessages(box: String)
 PUT     /messages                   controllers.MessageCtrl.sendMessage(content: String, offerId: String, destinationUser: String)
 
 # Offers
-GET     /offers                     controllers.OfferCtrl.queryOffers
+GET     /offers                     controllers.OfferCtrl.queryOffers(isDriver: Option[Boolean] ?= None, origin: Option[String] ?= None, destination: Option[String] ?= None)
 PUT     /offers                     controllers.OfferCtrl.createOffer(origin: String, destination: String, date: String, price: String, isDriver: Boolean)
 
 # Authentication
