@@ -9,8 +9,8 @@ object Global extends GlobalSettings {
     Logger.info("Application starting!")
     User.getAll.length match {
       case 0 =>
-        User.create("jimbo", "jimbo", "j@im.bo")
-        User.create("jones", "jones", "j@on.es")
+        User.create("daniel", "daniel",  "daniel@musikerchannel.de")
+        User.create("tibor", "tibor", "tybytyby@gmail.com")
 
         Offer.create("Ikea Kassel", "Goettingen", new Date(), Some(5), "jimbo", true)
         Offer.create("Berlin", "Goettingen", new Date(), None, "jimbo", false)

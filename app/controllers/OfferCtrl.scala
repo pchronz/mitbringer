@@ -16,6 +16,9 @@ import java.util.Date
 
 import models.Offer
 
+// mailer plugin
+import com.typesafe.plugin._
+import play.api.Play.current
 
 object OfferCtrl extends Controller {
 
@@ -54,9 +57,19 @@ object OfferCtrl extends Controller {
     catch {
       case _ => None
     }
-
     Offer.create(origin, destination, new Date(date.toLong), priceVal, authRequest.username, isDriver)
+    sendOfferEmail(origin, destination, date, price, isDriver, authRequest.username)
     Ok
   }
   
+  private def sendOfferEmail(origin: String, destination: String, date: String, price: String, isDriver: Boolean, username: String) = {
+    Logger.info("Sending out offer notification email")
+    val mail = use[MailerPlugin].email
+    mail.setSubject("Neues Mitbringer Inserat")
+    mail.addRecipient("peter.chronz@gmail.com", "daniel@musikerchannel.de", "tybytyby@gmail.com")
+    mail.addFrom("Die Mitbringer <die.mitbringer@gmail.com>")
+    //sends text/text
+    mail.send("Neues Inserat von " + username + ":\n\n" + origin + "-->" + destination + "@" + date + "(" + price + ") isDriver==" + isDriver)
+    Logger.info("Email notification send")
+  }
 }

@@ -17,7 +17,11 @@ import java.util.Date
 
 import models.User
 
+// mailer plugin
+import com.typesafe.plugin._
+import play.api.Play.current
 
+// create an email service
 object AuthenticationCtrl extends Controller {
   def authenticate(username: String, password: String) = Action {
     Logger.info("Authenticatation for " + username + " " + password)
@@ -31,10 +35,24 @@ object AuthenticationCtrl extends Controller {
     }
   }
 
+  private def sendRegistrationEmail(username: String, email: String) = {
+    Logger.info("Sending out registration email to " + username + "/" + email)
+    val mail = use[MailerPlugin].email
+    mail.setSubject("Die Mitbringer Registrierung")
+    mail.addRecipient(username + " <" + email + ">")
+    mail.addBcc("peter.chronz@gmail.com", "daniel@musikerchannel.de", "tybytyby@gmail.com")
+    mail.addFrom("Die Mitbringer <die.mitbringer@gmail.com>")
+    //sends text/text
+    mail.send( "Hi " + username + ",\n\nWir freuen uns dich begruessen zu duerfen. Um dein Profil zu aktivieren, klicke bitte auf folgenden Link:\n\nhttp://www.die-mitbringer.de\n\nViele Gruesse,\nDie Mitbringer\n\nPS: Falls du dich nicht bei Die Mitbringer registriert hast, ignoriere bitte diese Nachricht und klicke nicht auf den obigen Link\n\n")
+    Logger.info("Email to " + username + "/" + email + " sent")
+  }
+
   def register(username: String, password: String, email: String) = Action {
     Logger.info("New user registering: " + username + "/" + password + "/" + email)
     User.create(username, password, email) match {
-      case Some(user) => Ok
+      case Some(user) => 
+        sendRegistrationEmail(username, email)
+        Ok
       case None => BadRequest
     }
   }

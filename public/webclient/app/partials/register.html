@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="span6 offset3">
-		<form class="form-horizontal">
+		<form class="form-horizontal"  ng-submit="register(registerName, registerPassword, registerPassword2, registerEmail)">
 			<legend>Registrieren</legend>
 			<div class="control-group">
 				<label class="control-label" for="registerName">Name</label>
@@ -28,7 +28,8 @@
 			</div>
 			<div class="control-group">
 				<div class="controls">
-					<a class="btn btn-primary" ng-click="register(registerName, registerPassword, registerPassword2, registerEmail)">Registrieren</a>
+					<input type="submit" class="btn btn-primary" value="Registrieren" ng-hide="isRegistering" />
+                    <img src="img/spinner.gif" ng-show="isRegistering" />
 				</div>
 			</div>
 		</form>

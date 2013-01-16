@@ -51,4 +51,8 @@ object User {
   def getAll() = DB.withConnection { implicit c =>
     SQL("SELECT * FROM usar").as(user *)
   }
+
+  def getByUsername(username: String) = DB.withConnection { implicit c =>
+    SQL("SELECT * FROM usar WHERE username={username}").on("username"->username).as(user *)
+  }
 }

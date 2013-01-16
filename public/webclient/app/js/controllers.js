@@ -177,7 +177,7 @@ function MessagesCtrl($scope, $rootScope, Offer, Message) {
 }
 MessagesCtrl.$inject = ['$scope', '$rootScope', 'Offer', 'Message'];
 
-function LoginCtrl($scope, $rootScope, Login) {
+function LoginCtrl($scope, $rootScope, $location, Login) {
   $rootScope.activeView = 'login';
 
   $scope.loginName;
@@ -186,9 +186,10 @@ function LoginCtrl($scope, $rootScope, Login) {
   $scope.authenticate = function(name, password) {
     console.log('Authenticating as ' + name + "/" + password);
     Login.authenticate(name, password);
+    $location.path("/");
   }
 }
-LoginCtrl.$inject = ['$scope', '$rootScope', 'Login'];
+LoginCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login'];
 
 function RegisterCtrl($scope, $rootScope, $location, Login) {
   $rootScope.activeView = 'login';
@@ -198,12 +199,17 @@ function RegisterCtrl($scope, $rootScope, $location, Login) {
   $scope.registerPassword2;
   $scope.registerEmail;
 
+  $scope.isRegistering = false;
+
   $scope.register = function(username, password, password2, email) {
     function success() {
+      $scope.isRegistering = false;
       $location.path('/login');
     }
     function failure() {
+      $scope.isRegistering = false;
     }
+    $scope.isRegistering = true;
     // validate the email address
     var emailValid = /[A-z|0-9]+@[A-z|0-9]+\.[A-z]+/.test(email);
     console.log("Email valid: " + emailValid);

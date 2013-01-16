@@ -15,8 +15,13 @@ import scala.collection.JavaConversions._
 import java.util.Date
 
 import models.Message
+import models.User
 
+// mailer plugin
+import com.typesafe.plugin._
+import play.api.Play.current
 
+// TODO create an email service
 object MessageCtrl extends Controller {
 
   implicit def messagesToJson(messages: List[Message]): JsValue = {
@@ -46,10 +51,24 @@ object MessageCtrl extends Controller {
     Logger.debug(stringify(toJson(messagesToJson(messages))))
     Ok(stringify(toJson(messagesToJson(messages))))
   }
+
+  private def sendMessageNotificationEmail(destinationUser: String, originUser: String) {
+    Logger.info("Sending out message notification email to " + destinationUser)
+    val user = User.getByUsername(destinationUser)(0)
+    val mail = use[MailerPlugin].email
+    mail.setSubject("Die Mitbringer Benachrichtigung")
+    mail.addRecipient(user.username + " <" + user.email + ">")
+    mail.addBcc("peter.chronz@gmail.com", "tybytyby@gmail.com", "daniel@musikerchannel.de")
+    mail.addFrom("Die Mitbringer <die.mitbringer@gmail.com>")
+    //sends text/text
+    mail.send( "Hi " + user.username + ",\n\nDu hast eine neue Nachricht von " + originUser + " auf http://www.die-mitbringer.de erhalten!\n\nViele Gruesse,\nDie Mitbringer\n\n")
+    Logger.info("Email to " + user.username + "/" + user.email + " sent")
+  }
   
   def sendMessage(content: String, offerId: String, destinationUser: String) = Authenticated { authRequest =>
     Logger.info("Sending message with " + content + " " + offerId + " " + destinationUser + " " + authRequest.username)
     Message.create(authRequest.username, destinationUser, new Date(), offerId.toLong, "unread", content)
+    sendMessageNotificationEmail(destinationUser, authRequest.username)
     Ok
   }
   
