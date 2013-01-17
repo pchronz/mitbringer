@@ -9,23 +9,27 @@ function loginFactory($resource) {
 	var loginService = new Object();
 
 	loginService.authToken = {username: "", password: ""};
-	loginService.loginResource = $resource("http://localhost:port/logins", {port: ":9000"}, {
+	loginService.loginResource = $resource("http://localhost:port/logins/:reset", {port: ":9000"}, {
       authenticate: {method: "POST", isArray: false},
+      resetPassword: {method: "POST", isArray: false},
+      changePassword: {method: "POST", isArray: false},
       register: {method: "PUT", isArray: false}
     });
 	loginService.authenticate = function(username, password, success, failure) {
 		console.log("Trying to authenticate...");
-        function success() {
+        function successLocal() {
           console.log("Login successful");
           $.jStorage.set("authTokenUsername", username);
           $.jStorage.set("authTokenPassword", password);
+          success();
         }
-        function failure() {
+        function failureLocal() {
           console.log("Login failed");
           $.jStorage.deleteKey("authTokenUsername");
           $.jStorage.deleteKey("authTokenPassword");
+          failure();
         }
-		this.loginResource.authenticate({username: username, password: password}, {}, success, failure);
+		this.loginResource.authenticate({username: username, password: password}, {}, successLocal, failureLocal);
 	};
 	loginService.getAuthToken = function() {
 		console.log("Getting auth token");
@@ -47,6 +51,13 @@ function loginFactory($resource) {
 	};
 	loginService.register = function(username, password, email, success, failure) {
       this.loginResource.register({username: username, password: password, email: email}, {}, success, failure);
+    }
+	loginService.resetPassword = function(username, email, success, failure) {
+      this.loginResource.resetPassword({username: username, email: email, reset: 'reset'}, {}, success, failure);
+    }
+	loginService.changePassword = function(newPassword, success, failure) {
+      var authToken = this.getAuthToken();
+      this.loginResource.changePassword({newPassword: newPassword, reset: 'password'}, {username: authToken.username, password: authToken.password}, success, failure);
     }
 
 	return loginService;

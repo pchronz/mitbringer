@@ -4,6 +4,8 @@
 
 # Home page
 GET     /                           controllers.Application.index
+GET     /justActivated              controllers.Application.justActivated
+GET     /failedActivation           controllers.Application.failedActivation
 
 # Messages
 GET     /messages/:box              controllers.MessageCtrl.queryMessages(box: String)
@@ -16,6 +18,9 @@ PUT     /offers                     controllers.OfferCtrl.createOffer(origin: St
 # Authentication
 POST    /logins                     controllers.AuthenticationCtrl.authenticate(username: String, password: String)
 PUT     /logins                     controllers.AuthenticationCtrl.register(username: String, password: String, email: String)
+GET     /logins/activation/:confirmationKey     controllers.AuthenticationCtrl.activateUser(confirmationKey)
+POST    /logins/reset               controllers.AuthenticationCtrl.resetPassword(username: String, email: String)
+POST    /logins/password            controllers.AuthenticationCtrl.changePassword(newPassword: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

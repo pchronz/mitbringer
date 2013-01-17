@@ -4,6 +4,7 @@
 
 
 function OffersCtrl($scope, $rootScope, $location, Login, Offer, Message) {
+  console.log("Active controller: Offers");
   $rootScope.activeView = 'listOffers';
 
   $scope.activePane = 'allOffers';
@@ -87,6 +88,7 @@ function OffersCtrl($scope, $rootScope, $location, Login, Offer, Message) {
 OffersCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login', 'Offer', 'Message'];
 
 function MessagesCtrl($scope, $rootScope, Offer, Message) {
+  console.log("Active controller: Messages");
   $rootScope.activeView = 'listMessages';
 
   function getOffersSuccess() {
@@ -178,20 +180,50 @@ function MessagesCtrl($scope, $rootScope, Offer, Message) {
 MessagesCtrl.$inject = ['$scope', '$rootScope', 'Offer', 'Message'];
 
 function LoginCtrl($scope, $rootScope, $location, Login) {
+  console.log("Active controller: Login");
   $rootScope.activeView = 'login';
 
   $scope.loginName;
   $scope.loginPassword;
 
   $scope.authenticate = function(name, password) {
+    function success() {
+      console.log('Authentication successful');
+      $location.path("/");
+    }
     console.log('Authenticating as ' + name + "/" + password);
-    Login.authenticate(name, password);
-    $location.path("/");
+    Login.authenticate(name, password, success);
+  }
+
+  $scope.forgotPassword = false;
+  $scope.showPasswordRecovery = function() {
+    $("#passwordRecoveryModal").modal('show');
+  }
+  $scope.isResetting = false;
+  $scope.resetSuccessful = false;
+  $scope.resetPassword = function(username, email) {
+    function success() {
+      $scope.isResetting = false;
+      $scope.resetSuccessful = true;
+    }
+    function failure() {
+      $scope.isResetting = false;
+      $scope.resetSuccessful = false;
+    }
+    console.log("Resetting username for " + username + "/" + email);
+    $scope.isResetting = true;
+    $scope.resetSuccessful = false;
+    Login.resetPassword(username, email, success, failure);
+  }
+  $scope.closeModal = function() {
+    console.log('Closing all modals');
+    $(".modal").modal("hide");
   }
 }
 LoginCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login'];
 
 function RegisterCtrl($scope, $rootScope, $location, Login) {
+  console.log("Active controller: Register");
   $rootScope.activeView = 'login';
 
   $scope.registerName;
@@ -200,11 +232,12 @@ function RegisterCtrl($scope, $rootScope, $location, Login) {
   $scope.registerEmail;
 
   $scope.isRegistering = false;
+  $scope.registrationSuccess = false;
 
   $scope.register = function(username, password, password2, email) {
     function success() {
       $scope.isRegistering = false;
-      $location.path('/login');
+      $scope.registrationSuccess = true;
     }
     function failure() {
       $scope.isRegistering = false;
@@ -229,7 +262,58 @@ function RegisterCtrl($scope, $rootScope, $location, Login) {
 }
 RegisterCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login'];
 
+function ActivationCtrl($scope, $rootScope) {
+  console.log("Active controller: Activation");
+  $rootScope.activeView = 'login';
+}
+ActivationCtrl.$inject = ['$scope', '$rootScope'];
+
+function ChangePasswordCtrl($scope, $rootScope, $location, Login) {
+  console.log("Active controller: Change password");
+  $rootScope.activeView = 'login';
+
+  $scope.isNewPasswordValid = false;
+  $scope.validateNewPasswords = function(currentPassword, newPassword1, newPassword2) {
+    console.log("Checking new passwords");
+    console.log(newPassword1 + " " + newPassword2);
+    $scope.isNewPasswordValid = false;
+    if(typeof newPassword1 === 'undefined') return;
+    console.log("defined");
+    if(newPassword1 != newPassword2) return;
+    console.log("same");
+    if(newPassword1.length < 4) return;
+    console.log("length >= 4");
+    if(currentPassword != Login.getAuthToken().password) return;
+    console.log("old pass correct");
+    $scope.isNewPasswordValid = true;
+    console.log("New passwords are valid");
+  }
+  $scope.newPasswordSuccess = false;
+  $scope.isChangingPassword = false;
+  $scope.passwordChangeRequestDone = false;
+  $scope.changePassword = function(newPassword) {
+    function success() {
+      $scope.newPasswordSuccess = true;
+      $scope.isChangingPassword = false;
+      $scope.passwordChangeRequestDone = true;
+      Login.logout();
+      $location.path('/login');
+    }
+    function failure() {
+      $scope.newPasswordSuccess = false;
+      $scope.isChangingPassword = false;
+      $scope.passwordChangeRequestDone = true;
+    }
+    $scope.newPasswordSuccess = false;
+    $scope.isChangingPassword = true;
+    $scope.passwordChangeRequestDone = false;
+    Login.changePassword(newPassword, success, failure);
+  }
+}
+ChangePasswordCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login'];
+
 function NavCtrl($scope, $rootScope, $location, Login, Message) {
+  console.log("Active controller: Nav");
   // if the user is not logged in, redirect to the login window
   $rootScope.$on("event:auth-loginRequired", function() {
     console.log("401 interceptor says hello");
@@ -250,7 +334,7 @@ function NavCtrl($scope, $rootScope, $location, Login, Message) {
         if(message.state == 'unread') $scope.numNewMessages += 1;
       }
     }
-    Message.getReceivedMessages(success);
+    if(Login.isLoggedIn()) Message.getReceivedMessages(success);
   }
   updateNumNewMessages();
   

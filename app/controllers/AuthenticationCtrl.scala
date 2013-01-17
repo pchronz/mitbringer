@@ -14,6 +14,7 @@ import play.api.Play.current
 // Scala, Java imports
 import scala.collection.JavaConversions._
 import java.util.Date
+import java.util.Random
 
 import models.User
 
@@ -35,7 +36,7 @@ object AuthenticationCtrl extends Controller {
     }
   }
 
-  private def sendRegistrationEmail(username: String, email: String) = {
+  private def sendRegistrationEmail(username: String, email: String, confirmationKey: String) = {
     Logger.info("Sending out registration email to " + username + "/" + email)
     val mail = use[MailerPlugin].email
     mail.setSubject("Die Mitbringer Registrierung")
@@ -43,18 +44,57 @@ object AuthenticationCtrl extends Controller {
     mail.addBcc("peter.chronz@gmail.com", "daniel@musikerchannel.de", "tybytyby@gmail.com")
     mail.addFrom("Die Mitbringer <die.mitbringer@gmail.com>")
     //sends text/text
-    mail.send( "Hi " + username + ",\n\nWir freuen uns dich begruessen zu duerfen. Um dein Profil zu aktivieren, klicke bitte auf folgenden Link:\n\nhttp://www.die-mitbringer.de\n\nViele Gruesse,\nDie Mitbringer\n\nPS: Falls du dich nicht bei Die Mitbringer registriert hast, ignoriere bitte diese Nachricht und klicke nicht auf den obigen Link\n\n")
+    mail.send( "Hi " + username + ",\n\nWir freuen uns dich begruessen zu duerfen. Um dein Profil zu aktivieren, klicke bitte auf folgenden Link:\n\nhttp://www.die-mitbringer.de/logins/activation/" + confirmationKey + "\n\nViele Gruesse,\nDie Mitbringer\n\nPS: Falls du dich nicht bei Die Mitbringer registriert hast, ignoriere bitte diese Nachricht und klicke nicht auf den obigen Link\n\n")
     Logger.info("Email to " + username + "/" + email + " sent")
   }
 
   def register(username: String, password: String, email: String) = Action {
+    def generateConfirmationKey(): String = {
+      val random = new Random()
+      val chars = List('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0')
+      (1 to 32).map{i => val num = random.nextInt(chars.length); chars(num)}.mkString("")
+    }
     Logger.info("New user registering: " + username + "/" + password + "/" + email)
-    User.create(username, password, email) match {
+    val confirmationKey = generateConfirmationKey
+    User.create(username, password, email, confirmationKey) match {
       case Some(user) => 
-        sendRegistrationEmail(username, email)
+        sendRegistrationEmail(username, email, confirmationKey)
         Ok
       case None => BadRequest
     }
+  }
+
+  def activateUser(confirmationKey: String) = Action {
+    Logger.info("Activating user")
+    if(User.activate(confirmationKey)) Redirect("/justActivated")
+    else Redirect("/failedActivation")
+  }
+
+  def resetPassword(username: String, email: String) = Action {
+    Logger.info("Resetting password for " + username + "/" + email)
+    User.resetPassword(username, email) match {
+      case Some(password) =>
+        sendPasswordResetMail(username, email, password)
+        Ok
+      case None => BadRequest
+    }
+  }
+
+  def changePassword(newPassword: String) = Authenticated { implicit authRequest =>
+    Logger.info("Changing password for " + authRequest.username)
+    if(User.changePassword(authRequest.username, newPassword)) Ok
+    else BadRequest
+  }
+
+  private def sendPasswordResetMail(username: String, email: String, newPassword: String) = {
+    Logger.info("Sending out new password email to " + username + "/" + email)
+    val mail = use[MailerPlugin].email
+    mail.setSubject("Die Mitbringer Passwort")
+    mail.addRecipient(username + " <" + email + ">")
+    mail.addFrom("Die Mitbringer <die.mitbringer@gmail.com>")
+    //sends text/text
+    mail.send( "Hi " + username + ",\n\nJemand hat dein Passwort zurueckgesetzt. Dein neues Passwort lautet:\n\n" + newPassword + "\n\nBitte logge dich moeglichst bald neu ein und aendere dieses Passwort.\n\nViele Gruesse,\nDie Mitbringer\n")
+    Logger.info("Email to " + username + "/" + email + " sent")
   }
 }
 

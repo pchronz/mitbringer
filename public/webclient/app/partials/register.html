@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row" ng-hide="registrationSuccess">
 	<div class="span6 offset3">
 		<form class="form-horizontal"  ng-submit="register(registerName, registerPassword, registerPassword2, registerEmail)">
 			<legend>Registrieren</legend>
@@ -36,4 +36,13 @@
 	</div>
 </div>
 
+<div class="row" ng-show="registrationSuccess">
+  <div class="span12">
+    <div class="alert alert-info">
+      <strong>Alles klaro!</strong> 
+      <br/><br/>
+      Die Registrierung ist durchaus erfolgreich verlaufen. Wir haben dir eine Email mit einem Aktivierungslink zugeschickt. Bitte nutze den Link, um dein Zugangskonto zu aktivieren.
+    </div> 
+  </div>
+</div>
 

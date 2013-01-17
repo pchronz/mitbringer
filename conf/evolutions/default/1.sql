@@ -1,7 +1,7 @@
 # --- !Ups
 CREATE TABLE usar (
 	username VARCHAR(32) NOT NULL PRIMARY KEY,
-	password VARCHAR(64) NOT NULL,
+	password VARCHAR(128) NOT NULL,
 	email VARCHAR(64) NOT NULL UNIQUE
 );
 
@@ -26,7 +26,6 @@ CREATE TABLE message (
   state VARCHAR(16) NOT NULL,
   content TEXT NOT NULL
 );
-
 
 # --- !Downs
 DROP TABLE usar;
