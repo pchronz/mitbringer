@@ -101,11 +101,11 @@ function offerFactory($resource, Login) {
           return this.offerResource.query({isDriver: isDrivr, origin: origin},{},success, failure);
         return this.offerResource.query({isDriver: isDrivr, origin: origin, destination: destination},{},success, failure);
 	};
-	offerService.createOffer = function(origin, destination, date, price, isDriver) {
+	offerService.createOffer = function(origin, destination, date, price, isDriver, success, failure) {
       console.log('Creating new offer');
       var isDriverNum = isDriver ? 1 : 0;
       var authToken = Login.getAuthToken();
-      return this.offerResource.create({origin: origin, destination: destination, date: new Date(date).getTime(), price: price, isDriver: isDriverNum}, {username: authToken.username, password: authToken.password});
+      return this.offerResource.create({origin: origin, destination: destination, date: new Date(date).getTime(), price: price, isDriver: isDriverNum}, {username: authToken.username, password: authToken.password}, success, failure);
     }
 
 	return offerService;
@@ -141,5 +141,36 @@ function messageFactory($resource, Login) {
 };
 messageFactory.$inject = ["$resource", "Login"];
 
+serviceModule.factory("Notification", notificationFactory);
+function notificationFactory($rootScope) {
+  var notificationService = new Object();
+  notificationService.errors = [];
+  notificationService.pullNotifications = function() {
+    console.log("Pulling notifications");
+    var ms = this.notifications;
+    this.notifications = [];
+    return ms;
+  };
+  notificationService.pullErrors = function() {
+    console.log("Pulling errors");
+    var ms = this.errors;
+    this.errors = [];
+    return ms;
+  };
+  notificationService.pushNotification = function(notification, silent) {
+    console.log("Pushing notification");
+    this.notifications.push(notification);
+    if(!silent)
+      $rootScope.$broadcast('event:new-notification');
+  };
+  notificationService.pushError = function(error, silent) {
+    console.log("Pushing error");
+    this.errors.push(error);
+    if(!silent)
+      $rootScope.$broadcast('event:new-notification');
+  };
+  return notificationService;
+};
+notificationFactory.$inject = ["$rootScope"];
 
 

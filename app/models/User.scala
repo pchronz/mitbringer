@@ -21,8 +21,12 @@ object User {
     try {
       val securePassword = saltAndHash(username, password) 
       DB.withConnection{ implicit c =>
-        SQL("INSERT INTO usar_unconfirmed (username, password, email, confirmationKey) VALUES ({username}, {password}, {email}, {confirmationKey})").on("username"->username, "password"->securePassword, "email"->email, "confirmationKey"->confirmationKey).executeUpdate()
-        Some(User(username, password, email))
+        val existingUsers = SQL("SELECT * FROM usar WHERE email={email} OR username={username}").on("email"->email, "username"->username).as(user *)
+        if(existingUsers.length > 0) None
+        else {
+          SQL("INSERT INTO usar_unconfirmed (username, password, email, confirmationKey) VALUES ({username}, {password}, {email}, {confirmationKey})").on("username"->username, "password"->securePassword, "email"->email, "confirmationKey"->confirmationKey).executeUpdate()
+          Some(User(username, password, email))
+        }
       }
     }
     catch {

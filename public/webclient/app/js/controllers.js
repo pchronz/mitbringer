@@ -3,9 +3,16 @@
 /* Controllers */
 
 
-function OffersCtrl($scope, $rootScope, $location, Login, Offer, Message) {
+function OffersCtrl($scope, $rootScope, $location, Login, Offer, Message, Notification) {
   console.log("Active controller: Offers");
   $rootScope.activeView = 'listOffers';
+
+  // pull notifications regularly
+  $scope.notifications = Notification.pullNotifications();
+  $rootScope.$on("event:new-notification", function() {
+    $scope.notifications = Notification.pullNotifications();
+    $scope.errors = Notification.pullErrors();
+  });
 
   $scope.activePane = 'allOffers';
   $scope.activatePane = function(paneName) {
@@ -19,9 +26,12 @@ function OffersCtrl($scope, $rootScope, $location, Login, Offer, Message) {
     return $scope.activePane == paneName ? 'active' : '';
   }
 
-  $scope.allOffers = Offer.getAllOffers();
-  $scope.driverOffers = Offer.getDriverOffers();
-  $scope.driverSearches = Offer.getDriverSearches();
+  $scope.updateOffers = function() {
+    $scope.allOffers = Offer.getAllOffers();
+    $scope.driverOffers = Offer.getDriverOffers();
+    $scope.driverSearches = Offer.getDriverSearches();
+  }
+  $scope.updateOffers();
 
   $scope.dateToString = function(d) {
     var date = new Date(parseInt(d));
@@ -50,7 +60,13 @@ function OffersCtrl($scope, $rootScope, $location, Login, Offer, Message) {
   $scope.sendMessage = function(message, offer) {
     console.log('Sending message ' + message + ' for offer ' + offer.id);
     $(".modal").modal("hide");
-    Message.sendMessage(message, offer.id, offer.user);
+    function success() {
+      Notification.pushNotification('Die Nachricht wurde gesendet');
+    }
+    function failure() {
+      Notification.pushError('Beim Senden der Nachricht ist etwas schief gelaufen.');
+    }
+    Message.sendMessage(message, offer.id, offer.user, success, failure);
   }
 
   // confirm offer creation
@@ -64,7 +80,11 @@ function OffersCtrl($scope, $rootScope, $location, Login, Offer, Message) {
   $scope.createOffer = function(origin, destination, date, price, isDriver) {
     console.log("Creating a new offer: " + origin + " " + destination + " " + date + " " + price);
     $(".modal").modal("hide");
-    Offer.createOffer(origin, destination, date, price, isDriver, isDriver);
+    function success() {
+      Notification.pushNotification('Das Inserat wurde erstellt');
+      $scope.updateOffers();
+    }
+    Offer.createOffer(origin, destination, date, price, isDriver, isDriver, success);
   }
 
   $scope.closeModal = function() {
@@ -85,11 +105,18 @@ function OffersCtrl($scope, $rootScope, $location, Login, Offer, Message) {
     $scope.driverSearches = Offer.querySpecialOffers(false, originQuery, destinationQuery);
   }
 }
-OffersCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login', 'Offer', 'Message'];
+OffersCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login', 'Offer', 'Message', 'Notification'];
 
-function MessagesCtrl($scope, $rootScope, Offer, Message) {
+function MessagesCtrl($scope, $rootScope, Offer, Message, Notification) {
   console.log("Active controller: Messages");
   $rootScope.activeView = 'listMessages';
+
+  // pull notifications regularly
+  $scope.notifications = Notification.pullNotifications();
+  $rootScope.$on("event:new-notification", function() {
+    $scope.notifications = Notification.pullNotifications();
+    $scope.errors = Notification.pullErrors();
+  });
 
   function getOffersSuccess() {
     $scope.receivedMessages = Message.getReceivedMessages();
@@ -174,14 +201,27 @@ function MessagesCtrl($scope, $rootScope, Offer, Message) {
   $scope.sendResponse = function(message, content) {
     console.log('Sending response to message.id ' + message.id + ' with content \n' + content);
     $scope.closeModal();
-    Message.sendMessage(content, message.offerId, message.originUser);
+    function success() {
+      Notification.pushNotification('Die Nachricht wurde gesendet');
+    }
+    function failure() {
+      Notification.pushError('Beim Senden der Nachricht ist etwas schief gelaufen.');
+    }
+    Message.sendMessage(content, message.offerId, message.originUser, success, failure);
   }
 }
-MessagesCtrl.$inject = ['$scope', '$rootScope', 'Offer', 'Message'];
+MessagesCtrl.$inject = ['$scope', '$rootScope', 'Offer', 'Message', 'Notification'];
 
-function LoginCtrl($scope, $rootScope, $location, Login) {
+function LoginCtrl($scope, $rootScope, $location, Login, Notification) {
   console.log("Active controller: Login");
   $rootScope.activeView = 'login';
+
+  // pull notifications regularly
+  $scope.notifications = Notification.pullNotifications();
+  $rootScope.$on("event:new-notification", function() {
+    $scope.notifications = Notification.pullNotifications();
+    $scope.errors = Notification.pullErrors();
+  });
 
   $scope.loginName;
   $scope.loginPassword;
@@ -191,8 +231,11 @@ function LoginCtrl($scope, $rootScope, $location, Login) {
       console.log('Authentication successful');
       $location.path("/");
     }
+    function failure() {
+      console.log('Authentication failed');
+    }
     console.log('Authenticating as ' + name + "/" + password);
-    Login.authenticate(name, password, success);
+    Login.authenticate(name, password, success, failure);
   }
 
   $scope.forgotPassword = false;
@@ -220,11 +263,18 @@ function LoginCtrl($scope, $rootScope, $location, Login) {
     $(".modal").modal("hide");
   }
 }
-LoginCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login'];
+LoginCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login', 'Notification'];
 
-function RegisterCtrl($scope, $rootScope, $location, Login) {
+function RegisterCtrl($scope, $rootScope, $location, Login, Notification) {
   console.log("Active controller: Register");
   $rootScope.activeView = 'login';
+
+  // pull notifications regularly
+  $scope.notifications = Notification.pullNotifications();
+  $rootScope.$on("event:new-notification", function() {
+    $scope.notifications = Notification.pullNotifications();
+    $scope.errors = Notification.pullErrors();
+  });
 
   $scope.registerName;
   $scope.registerPassword;
@@ -241,8 +291,8 @@ function RegisterCtrl($scope, $rootScope, $location, Login) {
     }
     function failure() {
       $scope.isRegistering = false;
+      Notification.pushError('Bei der Registrierung ist etwas schief gelaufen. Ueberpruefe am besten deine Eintraege noch einmal.');
     }
-    $scope.isRegistering = true;
     // validate the email address
     var emailValid = /[A-z|0-9]+@[A-z|0-9]+\.[A-z]+/.test(email);
     console.log("Email valid: " + emailValid);
@@ -250,27 +300,47 @@ function RegisterCtrl($scope, $rootScope, $location, Login) {
     // validate the password
     var passwordSame = password == password2;
     console.log("Password same: " + passwordSame);
+    if(typeof password === 'undefined') password = '';
     var passwordValid = password.length >= 4;
     console.log("Password valid: " + passwordValid);
 
     // validate the username
+    if(typeof username === 'undefined') username = '';
     var usernameValid = username.length >= 4;
     console.log("Username valid: " + usernameValid);
 
-    if(emailValid && passwordSame && passwordValid && usernameValid) Login.register(username, password, email, success, failure);
+    if(emailValid && passwordSame && passwordValid && usernameValid) {
+      $scope.isRegistering = true;
+      Login.register(username, password, email, success, failure);
+    }
+    else Notification.pushError('Die Nutzername und Passwort muessen mindestens aus 4 Zeichen bestehen.');
   }
 }
-RegisterCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login'];
+RegisterCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login', 'Notification'];
 
-function ActivationCtrl($scope, $rootScope) {
+function ActivationCtrl($scope, $rootScope, Notification) {
   console.log("Active controller: Activation");
   $rootScope.activeView = 'login';
-}
-ActivationCtrl.$inject = ['$scope', '$rootScope'];
 
-function ChangePasswordCtrl($scope, $rootScope, $location, Login) {
+  // pull notifications regularly
+  $scope.notifications = Notification.pullNotifications();
+  $rootScope.$on("event:new-notification", function() {
+    $scope.notifications = Notification.pullNotifications();
+    $scope.errors = Notification.pullErrors();
+  });
+}
+ActivationCtrl.$inject = ['$scope', '$rootScope', 'Notification'];
+
+function ChangePasswordCtrl($scope, $rootScope, $location, Login, Notification) {
   console.log("Active controller: Change password");
   $rootScope.activeView = 'login';
+
+  // pull notifications regularly
+  $scope.notifications = Notification.pullNotifications();
+  $rootScope.$on("event:new-notification", function() {
+    $scope.notifications = Notification.pullNotifications();
+    $scope.errors = Notification.pullErrors();
+  });
 
   $scope.isNewPasswordValid = false;
   $scope.validateNewPasswords = function(currentPassword, newPassword1, newPassword2) {
@@ -298,11 +368,13 @@ function ChangePasswordCtrl($scope, $rootScope, $location, Login) {
       $scope.passwordChangeRequestDone = true;
       Login.logout();
       $location.path('/login');
+      Notification.pushNotification('Das Passwort wurde erfolgreich geaendert.', true);
     }
     function failure() {
       $scope.newPasswordSuccess = false;
       $scope.isChangingPassword = false;
       $scope.passwordChangeRequestDone = true;
+      Notification.pushError('Beim Aendern des Passworts ist etwas schief gelaufen.');
     }
     $scope.newPasswordSuccess = false;
     $scope.isChangingPassword = true;
@@ -310,15 +382,20 @@ function ChangePasswordCtrl($scope, $rootScope, $location, Login) {
     Login.changePassword(newPassword, success, failure);
   }
 }
-ChangePasswordCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login'];
+ChangePasswordCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login', 'Notification'];
 
-function NavCtrl($scope, $rootScope, $location, Login, Message) {
+function NavCtrl($scope, $rootScope, $location, Login, Message, Notification) {
   console.log("Active controller: Nav");
   // if the user is not logged in, redirect to the login window
   $rootScope.$on("event:auth-loginRequired", function() {
-    console.log("401 interceptor says hello");
-    Login.logout();
-    $location.path("/login");
+    if($rootScope.activeView != 'login') {
+      console.log("401 interceptor says hello");
+      Login.logout();
+      $location.path("/login");
+    }
+    else {
+      Notification.pushError('Probiere es noch einmal.');
+    }
   });
 
   $scope.getUsername = function() {
@@ -364,5 +441,5 @@ function NavCtrl($scope, $rootScope, $location, Login, Message) {
     return Login.isLoggedIn();
   }
 }
-NavCtrl.$inject = ['$scope','$rootScope', '$location', 'Login', 'Message'];
+NavCtrl.$inject = ['$scope','$rootScope', '$location', 'Login', 'Message', 'Notification'];
 

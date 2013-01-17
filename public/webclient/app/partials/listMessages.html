@@ -6,6 +6,15 @@
     </ul>
   </div>
 </div>
+<div class="row" ng-show="errors.length > 0">
+  <div class="span6 offset3">
+    <div class="alert alert-error">
+      <p ng-repeat="error in errors">
+        {{error}}
+      </p>
+    </div>
+  </div>
+</div>
 
 <!-- inbox pane -->
 <div class="row" id="inboxPane" ng-show="activePane == 'inbox'">
