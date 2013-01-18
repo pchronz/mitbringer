@@ -42,7 +42,7 @@ object AuthenticationCtrl extends Controller {
     mail.setSubject("Die Mitbringer Registrierung")
     mail.addRecipient(username + " <" + email + ">")
     mail.addBcc("peter.chronz@gmail.com", "daniel@musikerchannel.de", "tybytyby@gmail.com")
-    mail.addFrom("Die Mitbringer <die.mitbringer@gmail.com>")
+    mail.addFrom("Die Mitbringer <die.mitbringer@die-mitbringer.de>")
     //sends text/text
     mail.send( "Hi " + username + ",\n\nWir freuen uns dich begruessen zu duerfen. Um dein Profil zu aktivieren, klicke bitte auf folgenden Link:\n\nhttp://www.die-mitbringer.de/logins/activation/" + confirmationKey + "\n\nViele Gruesse,\nDie Mitbringer\n\nPS: Falls du dich nicht bei Die Mitbringer registriert hast, ignoriere bitte diese Nachricht und klicke nicht auf den obigen Link\n\n")
     Logger.info("Email to " + username + "/" + email + " sent")
@@ -91,7 +91,7 @@ object AuthenticationCtrl extends Controller {
     val mail = use[MailerPlugin].email
     mail.setSubject("Die Mitbringer Passwort")
     mail.addRecipient(username + " <" + email + ">")
-    mail.addFrom("Die Mitbringer <die.mitbringer@gmail.com>")
+    mail.addFrom("Die Mitbringer <die.mitbringer@die-mitbringer.de>")
     //sends text/text
     mail.send( "Hi " + username + ",\n\nJemand hat dein Passwort zurueckgesetzt. Dein neues Passwort lautet:\n\n" + newPassword + "\n\nBitte logge dich moeglichst bald neu ein und aendere dieses Passwort.\n\nViele Gruesse,\nDie Mitbringer\n")
     Logger.info("Email to " + username + "/" + email + " sent")

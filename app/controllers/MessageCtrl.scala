@@ -59,7 +59,7 @@ object MessageCtrl extends Controller {
     mail.setSubject("Die Mitbringer Benachrichtigung")
     mail.addRecipient(user.username + " <" + user.email + ">")
     mail.addBcc("peter.chronz@gmail.com", "tybytyby@gmail.com", "daniel@musikerchannel.de")
-    mail.addFrom("Die Mitbringer <die.mitbringer@gmail.com>")
+    mail.addFrom("Die Mitbringer <die.mitbringer@die-mitbringer.de>")
     //sends text/text
     mail.send( "Hi " + user.username + ",\n\nDu hast eine neue Nachricht von " + originUser + " auf http://www.die-mitbringer.de erhalten!\n\nViele Gruesse,\nDie Mitbringer\n\n")
     Logger.info("Email to " + user.username + "/" + user.email + " sent")

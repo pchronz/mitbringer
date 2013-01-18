@@ -67,7 +67,7 @@ object OfferCtrl extends Controller {
     val mail = use[MailerPlugin].email
     mail.setSubject("Neues Mitbringer Inserat")
     mail.addRecipient("peter.chronz@gmail.com", "daniel@musikerchannel.de", "tybytyby@gmail.com")
-    mail.addFrom("Die Mitbringer <die.mitbringer@gmail.com>")
+    mail.addFrom("Die Mitbringer <info@die-mitbringer.de>")
     //sends text/text
     mail.send("Neues Inserat von " + username + ":\n\n" + origin + "-->" + destination + "@" + date + "(" + price + ") isDriver==" + isDriver)
     Logger.info("Email notification send")
