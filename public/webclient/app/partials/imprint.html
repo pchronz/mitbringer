@@ -1,0 +1,37 @@
+<div class="row" ng-show="notifications.length > 0">
+  <div class="span6 offset3">
+    <div class="alert alert-info">
+      <p ng-repeat="notification in notifications">
+        {{notification}}
+      </p>
+    </div>
+  </div>
+</div>
+<div class="row" ng-show="errors.length > 0">
+  <div class="span6 offset3">
+    <div class="alert alert-error">
+      <p ng-repeat="error in errors">
+        {{error}}
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="span12">
+    <h1>Impressum</h1>
+    <p>
+      <strong>Verantwortilcher:</strong> <br/>
+      Ribot Nalmak <br/>
+      Nalmak Inc. <br/>
+      Nalmakweg. 13 <br/>
+      23948 Budapest <br/>
+    </p>
+    <p>
+      <strong>Haftungssausschluss</strong><br />
+Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber verantwortlich. Gleiches gilt für Inhalte, die von unseren Usern bereit gestellt werden. Im Falle von Copyrightproblemen u.ä. entfernen wir entsprechende Inhalte nach Hinweis umgehend, aber übernehmen über diese Sorgfaltspflicht hinaus keinerlei Verantwortung für Inhalte von Dritten.
+    </p>
+  </div>
+</div>
+
+

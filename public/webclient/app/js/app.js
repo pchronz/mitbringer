@@ -12,5 +12,6 @@ angular.module('breakingBad', ['breakingBad.filters', 'breakingBad.services', 'b
     $routeProvider.when('/changePassword', {templateUrl: 'partials/changePassword.html', controller: ChangePasswordCtrl});
     $routeProvider.when('/justActivated', {templateUrl: 'partials/justActivated.html', controller: ActivationCtrl});
     $routeProvider.when('/failedActivation', {templateUrl: 'partials/failedActivation.html', controller: ActivationCtrl});
+    $routeProvider.when('/imprint', {templateUrl: 'partials/imprint.html', controller: ImprintCtrl});
     $routeProvider.otherwise({redirectTo: '/'});
   }]);

@@ -384,6 +384,12 @@ function ChangePasswordCtrl($scope, $rootScope, $location, Login, Notification) 
 }
 ChangePasswordCtrl.$inject = ['$scope', '$rootScope', '$location', 'Login', 'Notification'];
 
+function ImprintCtrl($rootScope) {
+  console.log("Active controller: Imprint");
+  $rootScope.activeView = 'imprint';
+}
+ImprintCtrl.$inject = ["$rootScope"];
+
 function NavCtrl($scope, $rootScope, $location, Login, Message, Notification) {
   console.log("Active controller: Nav");
   // if the user is not logged in, redirect to the login window
