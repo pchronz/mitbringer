@@ -111,6 +111,12 @@
         </div>
       </div>
       <div class="control-group">
+        <label class="control-label" for="messageDestination">An</label>
+        <div class="controls">
+          <input type="text" id="messageDestination" value="{{activeMessage.destinationUser}}" readonly></input>
+        </div>
+      </div>
+      <div class="control-group">
         <label class="control-label" for="messageContent">Nachricht</label>
         <div class="controls">
           <textarea id="messageContent" rows="10" readonly style="resize: none;">{{activeMessage.content}}</textarea>
@@ -119,8 +125,8 @@
     </form>
   </div>
   <div class="modal-footer">
-    <a class="btn" ng-click="closeModal()">Verwerfen</a>
-    <a class="btn btn-primary" ng-click="showResponseModal(activeMessage)">Antworten</a>
+    <a class="btn" ng-click="closeModal()" ng-show="activePane=='inbox'">Verwerfen</a>
+    <a class="btn btn-primary" ng-click="showResponseModal(activeMessage)" ng-show="activePane=='inbox'">Antworten</a>
   </div>
 </div>
 
