@@ -11,7 +11,7 @@
 		<div class="navbar navbar-inverse navbar-fixed-top" ng-controller="NavCtrl">
 			<div class="navbar-inner">
 				<div class="container">
-                  <a class="brand" href="#"><img ng-src="img/breakingbad5.jpg"></img></a>
+                  <a class="brand" href="#"><img ng-src="img/mitbringer-logo.png"></img></a>
 					<ul class="nav">
                       <li ng-repeat="view in views" ng-class="getViewClass(view.name)" ng-show="getShow(view)"><a href="#/{{view.name}}">{{view.label}} <strong ng-show="view.name == 'listMessages'" class="strong">({{numNewMessages}})</strong></a></li>
 					</ul>
